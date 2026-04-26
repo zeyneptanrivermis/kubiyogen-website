@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,14 +8,17 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String       @unique
   password      String
-  role          Role      @default(USER)
+  avatar        String?
+  role          Role         @default(USER)
   orders        Order[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  accessCodes   AccessCode[]
+  reviews       Review[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 enum Role {
@@ -26,50 +26,130 @@ enum Role {
   ADMIN
 }
 
-model Course {
+model Instructor {
   id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  description String
-  price       Float
-  category    String // Online, Yüz Yüze
-  language    String // TR, EN
+  name        String
+  title       String?
+  bio         String?
+  avatar      String?
+  courses     Course[]
+  events      Event[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Course {
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  description   String
+  price         Float
+  category      String     // Online, Yüz Yüze
+  language      String     // TR, EN
+  instructorId  String?
+  instructor    Instructor? @relation(fields: [instructorId], references: [id])
+  orderItems    OrderItem[]
+  images        Media[]
+  reviews       Review[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Event {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  description String
-  date        DateTime
-  location    String
-  price       Float
-  isUpcoming  Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  description   String
+  date          DateTime
+  location      String
+  price         Float
+  isUpcoming    Boolean    @default(true)
+  instructorId  String?
+  instructor    Instructor? @relation(fields: [instructorId], references: [id])
+  orderItems    OrderItem[]
+  images        Media[]
+  reviews       Review[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String
-  price       Float
-  stock       Int      @default(0)
+  id            String     @id @default(cuid())
+  name          String
+  slug          String     @unique
+  description   String
+  price         Float
+  stock         Int        @default(0)
+  orderItems    OrderItem[]
+  images        Media[]
+  reviews       Review[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  totalAmount   Float
+  status        OrderStatus @default(PENDING)
+  items         OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  courseId  String?
+  course    Course?  @relation(fields: [courseId], references: [id])
+  eventId   String?
+  event     Event?   @relation(fields: [eventId], references: [id])
+  quantity  Int      @default(1)
+  price     Float    // Price at the time of purchase
+}
+
+model AccessCode {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  contentId   String   // Can be Course ID or Event ID
+  expiresAt   DateTime
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
-model Order {
-  id          String      @id @default(cuid())
-  userId      String
-  user        User        @relation(fields: [userId], references: [id])
-  totalAmount Float
-  status      OrderStatus @default(PENDING)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int      @default(5)
+  comment   String?
+  courseId  String?
+  course    Course?  @relation(fields: [courseId], references: [id])
+  eventId   String?
+  event     Event?   @relation(fields: [eventId], references: [id])
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String
+  type      String   // 'image', 'video'
+  courseId  String?
+  course    Course?  @relation(fields: [courseId], references: [id])
+  eventId   String?
+  event     Event?   @relation(fields: [eventId], references: [id])
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 enum OrderStatus {
