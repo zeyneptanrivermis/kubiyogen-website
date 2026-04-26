@@ -1,0 +1,34 @@
+{
+  "name": "kubiyogen-website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeyneptanrivermis/Kubiyogen-Website.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/zeyneptanrivermis/Kubiyogen-Website/issues"
+  },
+  "homepage": "https://github.com/zeyneptanrivermis/Kubiyogen-Website#readme",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
+  },
+  "lint-staged": {
+    "frontend/**/*.{js,jsx,ts,tsx}": [
+      "npm --prefix frontend run lint"
+    ],
+    "backend/**/*.{js,ts}": [
+      "npm --prefix backend run build"
+    ]
+  }
+}
