@@ -45,6 +45,25 @@ The following items are intentionally left out because they depend on backend/AP
 - `next build` completed successfully.
 - `/admin` and related admin routes were generated as static pages.
 
+## How to Run the Frontend
+
+From the repository root:
+
+```powershell
+cd frontend
+corepack pnpm install
+.\node_modules\.bin\next.cmd dev -p 3000
+```
+
+Then open:
+
+```text
+http://localhost:3000
+http://localhost:3000/admin
+```
+
+If PowerShell cannot find `next.cmd`, make sure the terminal is inside the `frontend` directory and dependencies were installed with `corepack pnpm install`.
+
 ## Notes
 
 The frontend directory was previously tracked as a gitlink/submodule-style entry. This PR converts it into normal tracked frontend files so the new UI work can be committed directly to the `sumeyye-dev` branch.
