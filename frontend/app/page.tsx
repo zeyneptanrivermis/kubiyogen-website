@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { Container } from "@/components/container";
 import { EventCard, ProductCard } from "@/components/cards";
-import { Hero } from "@/components/hero";
+import { HeroSlider } from "@/components/home/HeroSlider";
 import { SectionHeading } from "@/components/section-heading";
 import { pastEvents, products, shopCategories, upcomingEvents } from "@/lib/site-data";
 
 export default function HomePage() {
   return (
     <main>
-      <Hero />
+      <HeroSlider />
 
       <section className="py-16">
         <Container>
