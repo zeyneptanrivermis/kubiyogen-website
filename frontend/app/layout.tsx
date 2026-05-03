@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/app-shell";
 import { FloatingActions } from "@/components/floating-actions";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { ToastProvider } from "@/components/ui/toast";
 
 export const metadata: Metadata = {
   title: "Kubiyogen",
@@ -14,9 +15,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="tr">
       <body>
-        <AppShell header={<SiteHeader />} footer={<SiteFooter />} floatingActions={<FloatingActions />}>
-          {children}
-        </AppShell>
+        <ToastProvider>
+          <AppShell header={<Navbar />} footer={<Footer />} floatingActions={<FloatingActions />}>
+            {children}
+          </AppShell>
+        </ToastProvider>
       </body>
     </html>
   );
