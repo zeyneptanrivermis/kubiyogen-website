@@ -1,5 +1,5 @@
 import { Container } from "@/components/container";
-import { EventCard } from "@/components/cards";
+import { EventCard } from "@/components/events/EventCard";
 import { PageHero } from "@/components/page-hero";
 import { pastEvents, upcomingEvents } from "@/lib/site-data";
 
@@ -18,6 +18,8 @@ export default function EventsPage() {
               <EventCard
                 key={event.title}
                 title={event.title}
+                slug={event.title.toLowerCase().replace(/\s+/g, "-")}
+                date={event.date}
                 subtitle={event.date}
                 body={`${event.location} - ${event.instructor}. Etkinlik akisi, icerik basliklari ve katilimciya katkisi burada ozetlenecek.`}
                 meta={`${event.price} - ${event.quota}`}
@@ -32,8 +34,12 @@ export default function EventsPage() {
               <EventCard
                 key={event.title}
                 title={event.title}
+                slug={event.title.toLowerCase().replace(/\s+/g, "-")}
+                date={event.date}
                 subtitle={event.date}
                 body={event.summary}
+                location=""
+                price=""
                 ctaLabel="Ciktilari Incele"
               />
             ))}

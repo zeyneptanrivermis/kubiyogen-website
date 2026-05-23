@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { navigation } from "@/lib/site-data";
 import { Container } from "@/components/container";
+import { useCartStore } from "@/store/cartStore";
 
 function SearchIcon() {
   return (
@@ -54,6 +55,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const cartCount = useCartStore((s) => s.count());
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -102,10 +104,11 @@ export function Navbar() {
               className="relative rounded-lg p-2 text-slate-600 transition hover:bg-soft hover:text-ink"
             >
               <CartIcon />
-              {/* badge — will be driven by cart store on Day 13 */}
-              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-700 text-[10px] font-bold text-white">
-                0
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand-700 text-[10px] font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             {/* User icon */}
