@@ -8,17 +8,23 @@ datasource db {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String?
-  email         String       @unique
-  password      String
-  avatar        String?
-  role          Role         @default(USER)
-  orders        Order[]
-  accessCodes   AccessCode[]
-  reviews       Review[]
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id             String               @id @default(cuid())
+  name           String?
+  email          String               @unique
+  password       String
+  avatar         String?
+  phone          String?
+  role           Role                 @default(USER)
+  orders         Order[]
+  cartItems      CartItem[]
+  accessCodes    AccessCode[]
+  resetTokens    PasswordResetToken[]
+  accessLogs     AccessCodeLog[]
+  reviews        Review[]
+  visualProjects VisualProject[]
+  visualCredits  VisualCredit?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
 }
 
 enum Role {
@@ -27,101 +33,179 @@ enum Role {
 }
 
 model Instructor {
-  id          String   @id @default(cuid())
-  name        String
-  title       String?
-  bio         String?
-  avatar      String?
-  courses     Course[]
-  events      Event[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  title     String?
+  bio       String?
+  avatar    String?
+  courses   Course[]
+  events    Event[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Course {
-  id            String     @id @default(cuid())
-  title         String
-  slug          String     @unique
-  description   String
-  price         Float
-  category      String     // Online, Yüz Yüze
-  language      String     // TR, EN
-  instructorId  String?
-  instructor    Instructor? @relation(fields: [instructorId], references: [id])
-  orderItems    OrderItem[]
-  images        Media[]
-  reviews       Review[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id           String       @id @default(cuid())
+  title        String
+  slug         String       @unique
+  description  String
+  price        Float
+  category     String
+  language     String
+  instructorId String?
+  instructor   Instructor?  @relation(fields: [instructorId], references: [id])
+  orderItems   OrderItem[]
+  accessCodes  AccessCode[]
+  images       Media[]
+  reviews      Review[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 model Event {
-  id            String     @id @default(cuid())
-  title         String
-  slug          String     @unique
-  description   String
-  date          DateTime
-  location      String
-  price         Float
-  isUpcoming    Boolean    @default(true)
-  instructorId  String?
-  instructor    Instructor? @relation(fields: [instructorId], references: [id])
-  orderItems    OrderItem[]
-  images        Media[]
-  reviews       Review[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id           String       @id @default(cuid())
+  title        String
+  slug         String       @unique
+  description  String
+  date         DateTime
+  location     String
+  price        Float
+  isUpcoming   Boolean      @default(true)
+  instructorId String?
+  instructor   Instructor?  @relation(fields: [instructorId], references: [id])
+  orderItems   OrderItem[]
+  accessCodes  AccessCode[]
+  images       Media[]
+  reviews      Review[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 }
 
 model Product {
-  id            String     @id @default(cuid())
-  name          String
-  slug          String     @unique
-  description   String
-  price         Float
-  stock         Int        @default(0)
-  orderItems    OrderItem[]
-  images        Media[]
-  reviews       Review[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String
+  price       Float
+  stock       Int         @default(0)
+  orderItems  OrderItem[]
+  images      Media[]
+  reviews     Review[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemType  ItemType
+  itemId    String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, itemType, itemId])
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  totalAmount   Float
-  status        OrderStatus @default(PENDING)
-  items         OrderItem[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       OrderItem[]
+  totalAmount Float
+  status      OrderStatus @default(PENDING)
+  paymentRef  String?
+  accessCodes AccessCode[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model OrderItem {
   id        String   @id @default(cuid())
   orderId   String
-  order     Order    @relation(fields: [orderId], references: [id])
-  productId String?
-  product   Product? @relation(fields: [productId], references: [id])
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemType  ItemType
+  quantity  Int      @default(1)
+  unitPrice Float
+  price     Float?
   courseId  String?
   course    Course?  @relation(fields: [courseId], references: [id])
   eventId   String?
   event     Event?   @relation(fields: [eventId], references: [id])
-  quantity  Int      @default(1)
-  price     Float    // Price at the time of purchase
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model AccessCode {
-  id          String   @id @default(uuid())
-  code        String   @unique
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  contentId   String   // Can be Course ID or Event ID
-  expiresAt   DateTime
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String    @id @default(cuid())
+  code      String    @unique
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  orderId   String?
+  order     Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  courseId  String?
+  course    Course?   @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  eventId   String?
+  event     Event?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  contentId String?
+  expiresAt DateTime
+  usedAt    DateTime?
+  revokedAt DateTime?
+  isActive  Boolean   @default(true)
+  maxUses   Int       @default(1)
+  useCount  Int       @default(0)
+  logs      AccessCodeLog[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model AccessCodeLog {
+  id           String     @id @default(cuid())
+  accessCodeId String
+  accessCode   AccessCode @relation(fields: [accessCodeId], references: [id], onDelete: Cascade)
+  userId       String?
+  user         User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime   @default(now())
+}
+
+model VisualProject {
+  id            String             @id @default(cuid())
+  userId        String
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String
+  template      String
+  sceneJson     Json
+  exportFormat  VisualExportFormat @default(PNG)
+  isWatermarked Boolean            @default(true)
+  exportedAt    DateTime?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+}
+
+model VisualCredit {
+  id               String    @id @default(cuid())
+  userId           String    @unique
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  freeExportsUsed  Int       @default(0)
+  freeExportsLimit Int       @default(3)
+  isPro            Boolean   @default(false)
+  proExpiresAt     DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }
 
 model Review {
@@ -142,7 +226,7 @@ model Review {
 model Media {
   id        String   @id @default(cuid())
   url       String
-  type      String   // 'image', 'video'
+  type      String
   courseId  String?
   course    Course?  @relation(fields: [courseId], references: [id])
   eventId   String?
@@ -154,6 +238,20 @@ model Media {
 
 enum OrderStatus {
   PENDING
+  PAID
   SUCCESS
   FAILED
+  CANCELLED
+}
+
+enum ItemType {
+  COURSE
+  EVENT
+  PRODUCT
+}
+
+enum VisualExportFormat {
+  PNG
+  SVG
+  PDF
 }
