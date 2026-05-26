@@ -1,24 +1,27 @@
 import { Container } from "@/components/container";
 import { EventCard } from "@/components/cards";
 import { PageHero } from "@/components/page-hero";
-import { pastEvents } from "@/lib/site-data";
+import { formatDate, getRecentEvents } from "@/lib/catalog-api";
 
-export default function PastEventsPage() {
+export default async function PastEventsPage() {
+  const recentEvents = await getRecentEvents();
+
   return (
     <main>
       <PageHero
-        title="Son Yapilan Etkinlikler"
-        description="Gorseller, cikarimlar, katilimci yorumlari ve kazanilan becerilerin toplandigi sayfa yapisi."
+        title="Son Yapılan Etkinlikler"
+        description="Görseller, çıkarımlar, katılımcı yorumları ve kazanılan beceriler için geçmiş etkinlik kayıtları."
       />
       <section className="py-16">
         <Container className="grid gap-6 lg:grid-cols-3">
-          {pastEvents.map((event) => (
+          {recentEvents.map((event) => (
             <EventCard
-              key={event.title}
+              key={event.id}
               title={event.title}
-              subtitle={event.date}
-              body={event.summary}
-              ctaLabel="Yorumlari Gor"
+              subtitle={formatDate(event.date)}
+              body={event.description}
+              ctaLabel="Yorumları Gör"
+              slug={event.slug}
             />
           ))}
         </Container>

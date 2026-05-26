@@ -1,31 +1,42 @@
 import Link from "next/link";
 import { Container } from "@/components/container";
 import { EventCard, ProductCard } from "@/components/cards";
-import { HeroSlider } from "@/components/home/HeroSlider";
+import { Hero } from "@/components/hero";
 import { SectionHeading } from "@/components/section-heading";
-import { pastEvents, products, shopCategories, upcomingEvents } from "@/lib/site-data";
+import { shopCategories } from "@/lib/site-data";
+import { formatDate, formatPrice, getProducts, getRecentEvents, getUpcomingEvents } from "@/lib/catalog-api";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [upcomingEvents, recentEvents, products] = await Promise.all([
+    getUpcomingEvents(),
+    getRecentEvents(),
+    getProducts()
+  ]);
+  const visibleUpcoming = upcomingEvents.slice(0, 3);
+  const visibleRecent = recentEvents.slice(0, 3);
+  const visibleProducts = products.slice(0, 3);
+
   return (
     <main>
-      <HeroSlider />
+      <Hero />
 
       <section className="py-16">
         <Container>
           <SectionHeading
-            eyebrow="Yaklasan Etkinlikler"
-            title="Takvimde one cikan bulusmalar"
-            description="Ana sayfada en fazla uc etkinligi net kartlarla gosterecek bir alan."
+            eyebrow="Yaklaşan Etkinlikler"
+            title="Takvimde öne çıkan buluşmalar"
+            description="Veritabanındaki en yakın etkinlikler ana sayfada öne çıkarılır."
           />
           <div className="mt-8 grid gap-6 lg:grid-cols-3">
-            {upcomingEvents.map((event) => (
+            {visibleUpcoming.map((event) => (
               <EventCard
-                key={event.title}
+                key={event.id}
                 title={event.title}
-                subtitle={event.date}
-                body={`${event.location} - ${event.instructor}. Katilimciya net bir program akisi, uygulama alani ve soru-cevap zamani sunulacak.`}
-                meta={`${event.price} - ${event.quota}`}
-                ctaLabel="Etkinligi Incele"
+                subtitle={formatDate(event.date)}
+                body={event.description}
+                meta={`${event.location} - ${formatPrice(event.price)}`}
+                ctaLabel="Etkinliği İncele"
+                slug={event.slug}
               />
             ))}
           </div>
@@ -35,18 +46,19 @@ export default function HomePage() {
       <section className="bg-white py-16">
         <Container>
           <SectionHeading
-            eyebrow="Son Yapilan Etkinlikler"
-            title="Toplulugun yeni deneyimleri"
-            description="Etkinlik ozeti, ogrenimler ve ciktilar icin kullanilacak bolum."
+            eyebrow="Son Yapılan Etkinlikler"
+            title="Topluluğun yeni deneyimleri"
+            description="Veritabanında geçmiş olarak işaretlenen etkinliklerin özeti."
           />
           <div className="mt-8 grid gap-6 lg:grid-cols-3">
-            {pastEvents.map((event) => (
+            {visibleRecent.map((event) => (
               <EventCard
-                key={event.title}
+                key={event.id}
                 title={event.title}
-                subtitle={event.date}
-                body={event.summary}
-                ctaLabel="Etkinlik Notlari"
+                subtitle={formatDate(event.date)}
+                body={event.description}
+                ctaLabel="Etkinlik Notları"
+                slug={event.slug}
               />
             ))}
           </div>
@@ -56,9 +68,9 @@ export default function HomePage() {
       <section className="bg-soft py-16">
         <Container>
           <SectionHeading
-            eyebrow="Magaza"
-            title="Uc temel kategoriyle sade bir alisveris kurgusu"
-            description="Yuz yuze egitimler, dijital egitimler ve aksesuarlar ana giris kartlari olarak sunulacak."
+            eyebrow="Mağaza"
+            title="Üç temel kategoriyle sade bir alışveriş kurgusu"
+            description="Yüz yüze eğitimler, dijital eğitimler ve aksesuarlar ana giriş kartları olarak sunulur."
           />
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {shopCategories.map((category) => (
@@ -78,16 +90,19 @@ export default function HomePage() {
         <Container>
           <SectionHeading
             eyebrow="Aksesuarlar"
-            title="One cikan urunler"
-            description="Ana sayfada en fazla uc aksesuar urunu gosterilecek alan."
+            title="Öne çıkan ürünler"
+            description="Veritabanındaki aksesuar ürünlerinden ilk üç kayıt gösterilir."
           />
           <div className="mt-8 grid gap-6 lg:grid-cols-3">
-            {products.map((product) => (
+            {visibleProducts.map((product) => (
               <ProductCard
-                key={product.title}
-                title={product.title}
-                category={product.category}
-                price={product.price}
+                key={product.id}
+                title={product.name}
+                category="Aksesuar"
+                price={formatPrice(product.price)}
+                body={product.description}
+                slug={product.slug}
+                detailUrlPrefix="/magaza/aksesuarlar"
               />
             ))}
           </div>

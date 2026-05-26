@@ -1,51 +1,93 @@
 import { Container } from "@/components/container";
 import { PageHero } from "@/components/page-hero";
-import { QuantitySelector } from "@/components/store/QuantitySelector";
-import { products } from "@/lib/site-data";
+import { getProductBySlug, formatPrice } from "@/lib/catalog-api";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AddToCartButton } from "@/components/add-to-cart-button";
 
 type Props = {
-  params: { slug: string };
+  params: Promise<{
+    slug: string;
+  }>;
 };
 
-export function generateMetadata({ params }: Props) {
-  const product = products.find(
-    (p) => p.title.toLowerCase().replace(/\s+/g, "-") === params.slug
-  );
-  return {
-    title: product ? `${product.title} | Kubiyogen` : "Ürün Bulunamadı",
-  };
-}
+export default async function ProductDetailPage({ params }: Props) {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
 
-export default function ProductDetailPage({ params }: Props) {
-  const product = products.find(
-    (p) => p.title.toLowerCase().replace(/\s+/g, "-") === params.slug
-  );
-
-  if (!product) return notFound();
+  if (!product) {
+    notFound();
+  }
 
   return (
-    <main>
-      <PageHero title={product.title} description={product.category} />
+    <main className="min-h-screen bg-soft">
+      <PageHero
+        title={product.name}
+        description="Kubiyogen Özel Tasarım Laboratuvar Aksesuarları"
+      />
+
       <section className="py-16">
-        <Container className="max-w-2xl">
-          <p className="text-sm font-semibold text-brand-700">{product.category}</p>
-          <h1 className="mt-2 text-3xl font-bold text-ink">{product.title}</h1>
-          <p className="mt-4 text-sm text-slate-600">
-            Ürün açıklaması, kullanım alanları ve teknik detaylar burada yer alacak.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-6">
-            <span className="text-2xl font-bold text-ink">{product.price}</span>
-            <QuantitySelector />
-            <button className="rounded-lg bg-brand-700 px-6 py-3 text-sm font-semibold text-white">
-              Sepete Ekle
-            </button>
-          </div>
-          <div className="mt-12 border-t border-line pt-8">
-            <h2 className="text-xl font-semibold text-ink">Yorumlar</h2>
-            <p className="mt-4 text-sm text-slate-500">
-              Henüz yorum yapılmamış. İlk yorumu sen yap.
-            </p>
+        <Container>
+          <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
+            <article className="rounded-lg border border-line bg-white p-8 shadow-card">
+              <h2 className="text-2xl font-bold text-ink">Ürün Özellikleri</h2>
+              <div className="mt-6 text-base leading-8 text-slate-700 space-y-4">
+                {product.description.split("\n").map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
+              </div>
+
+              <div className="mt-10 border-t border-line pt-8">
+                <h3 className="text-lg font-bold text-ink mb-4">Teslimat & İade Şartları</h3>
+                <ul className="list-disc list-inside space-y-2 text-slate-600 text-sm">
+                  <li>Siparişiniz 24-48 saat içerisinde özenle paketlenerek kargoya verilir.</li>
+                  <li>Tüm Türkiye&apos;ye hızlı kargo seçeneği mevcuttur.</li>
+                  <li>Kutusu açılmamış ve zarar görmemiş ürünler 14 gün içerisinde ücretsiz iade edilebilir.</li>
+                  <li>Laboratuvar test tüpü standı ve rozetler özel korumalı ambalajında gönderilir.</li>
+                </ul>
+              </div>
+            </article>
+
+            <aside className="h-fit rounded-lg border border-line bg-white p-6 shadow-card">
+              <p className="text-sm font-semibold text-brand-700 uppercase tracking-wide">Ürün Bilgileri</p>
+              <div className="mt-4 space-y-4 text-sm font-semibold text-ink">
+                <div className="flex justify-between border-b border-line pb-3">
+                  <span className="text-slate-500 font-medium">Stok Durumu:</span>
+                  <span className={product.stock > 0 ? "text-green-600" : "text-red-600"}>
+                    {product.stock > 0 ? `${product.stock} Adet Stokta` : "Tükendi"}
+                  </span>
+                </div>
+                <div className="flex justify-between border-b border-line pb-3">
+                  <span className="text-slate-500 font-medium">Kategori:</span>
+                  <span>Aksesuarlar</span>
+                </div>
+                <div className="flex justify-between border-b border-line pb-3">
+                  <span className="text-slate-500 font-medium">Kargo:</span>
+                  <span className="text-green-600">Ücretsiz</span>
+                </div>
+                <div className="flex justify-between pb-1">
+                  <span className="text-slate-500 font-medium">Ürün Fiyatı:</span>
+                  <span className="text-lg font-bold text-brand-800">{formatPrice(product.price)}</span>
+                </div>
+              </div>
+
+              {product.stock > 0 ? (
+                <div className="mt-6">
+                  <AddToCartButton itemType="PRODUCT" itemId={product.id} />
+                </div>
+              ) : (
+                <div className="mt-6 text-center rounded-lg bg-soft p-3 text-xs font-semibold text-slate-500 border border-line">
+                  Bu ürün şu anda stokta bulunmamaktadır.
+                </div>
+              )}
+
+              <Link
+                href="/magaza/aksesuarlar"
+                className="mt-4 block text-center text-xs font-bold text-slate-600 hover:text-brand-700"
+              >
+                ← Aksesuarlara Dön
+              </Link>
+            </aside>
           </div>
         </Container>
       </section>

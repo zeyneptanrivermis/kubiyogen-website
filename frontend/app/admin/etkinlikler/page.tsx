@@ -1,40 +1,21 @@
-import Link from "next/link";
-import { AdminSection } from "@/components/admin/admin-section";
-import { adminEvents } from "@/components/admin/admin-data";
-import { Badge, Button, Table } from "@/components/ui";
+import { AdminResourceManager } from "@/components/admin-resource-manager";
 
 export default function AdminEventsPage() {
   return (
-    <AdminSection
+    <AdminResourceManager
       title="Etkinlikler"
-      description="Etkinlik listeleme, arama ve yayinda/taslak kontrolu."
-      action={
-        <Link href="/admin/etkinlikler/yeni">
-          <Button>Yeni Etkinlik</Button>
-        </Link>
-      }
-    >
-      <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-        <input className="rounded-lg border border-line px-3 py-2.5 text-sm outline-none" placeholder="Etkinlik ara" />
-        <select className="rounded-lg border border-line px-3 py-2.5 text-sm outline-none">
-          <option>Tum durumlar</option>
-          <option>Yayinda</option>
-          <option>Taslak</option>
-        </select>
-      </div>
-      <Table
-        data={adminEvents}
-        columns={[
-          { key: "title", header: "Baslik", cell: (row) => row.title },
-          { key: "date", header: "Tarih", cell: (row) => row.date },
-          { key: "price", header: "Fiyat", cell: (row) => row.price },
-          {
-            key: "status",
-            header: "Durum",
-            cell: (row) => <Badge tone={row.status === "Yayinda" ? "success" : "warning"}>{row.status}</Badge>
-          }
-        ]}
-      />
-    </AdminSection>
+      description="Etkinlik ekleme, duzenleme, taslak/yayin durumu ve tarih kontrolleri."
+      publicPath="/events"
+      adminPath="/admin/events"
+      fields={[
+        { name: "title", label: "Baslik" },
+        { name: "slug", label: "Slug" },
+        { name: "description", label: "Aciklama" },
+        { name: "date", label: "Tarih", type: "datetime-local" },
+        { name: "location", label: "Lokasyon" },
+        { name: "price", label: "Fiyat", type: "number" },
+        { name: "isUpcoming", label: "Yaklasan", type: "checkbox" }
+      ]}
+    />
   );
 }

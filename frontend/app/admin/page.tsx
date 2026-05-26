@@ -1,46 +1,33 @@
-import { AdminSection } from "@/components/admin/admin-section";
-import { adminOrders, adminStats } from "@/components/admin/admin-data";
-import { StatCard } from "@/components/admin/stat-card";
-import { Badge, ProgressBar, Table } from "@/components/ui";
+import Link from "next/link";
+import { adminSections } from "@/lib/site-data";
+
+const stats = [
+  { label: "Toplam Satis", value: "0 TL" },
+  { label: "Siparis", value: "0" },
+  { label: "Aktif Kullanici", value: "0" },
+  { label: "Kodlu Erisim", value: "Hazir" }
+];
 
 export default function AdminDashboardPage() {
   return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {adminStats.map((stat) => (
-          <StatCard key={stat.label} {...stat} />
+    <div className="grid gap-6">
+      <div className="grid gap-4 md:grid-cols-4">
+        {stats.map((stat) => (
+          <article key={stat.label} className="rounded-lg border border-line bg-white p-5 shadow-card">
+            <p className="text-sm text-slate-500">{stat.label}</p>
+            <p className="mt-2 text-2xl font-bold text-ink">{stat.value}</p>
+          </article>
         ))}
       </div>
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.6fr)]">
-        <AdminSection title="Son siparisler" description="Odeme durumu ve toplam tutar takibi icin dashboard ozeti.">
-          <Table
-            data={adminOrders}
-            columns={[
-              { key: "code", header: "Kod", cell: (row) => row.code },
-              { key: "user", header: "Kullanici", cell: (row) => row.user },
-              { key: "amount", header: "Tutar", cell: (row) => row.amount },
-              {
-                key: "status",
-                header: "Durum",
-                cell: (row) => (
-                  <Badge tone={row.status === "PAID" ? "success" : row.status === "PENDING" ? "warning" : "danger"}>
-                    {row.status}
-                  </Badge>
-                )
-              }
-            ]}
-          />
-        </AdminSection>
-
-        <AdminSection title="Haftalik hedefler" description="Basit grafik alani. Recharts baglaninca burasi canli veriye donecek.">
-          <div className="space-y-5">
-            <ProgressBar value={78} label="Satis hedefi" />
-            <ProgressBar value={64} label="Etkinlik doluluk" />
-            <ProgressBar value={42} label="Yeni kullanici" />
-          </div>
-        </AdminSection>
-      </div>
+      <section className="grid gap-4 md:grid-cols-2">
+        {adminSections.map((section) => (
+          <Link key={section.href} href={section.href} className="rounded-lg border border-line bg-white p-5 shadow-card">
+            <p className="text-sm font-semibold text-brand-700">{section.metric}</p>
+            <h2 className="mt-2 text-xl font-semibold text-ink">{section.title}</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">{section.description}</p>
+          </Link>
+        ))}
+      </section>
     </div>
   );
 }

@@ -1,34 +1,29 @@
 import { Container } from "@/components/container";
+import { ProductCard } from "@/components/cards";
 import { PageHero } from "@/components/page-hero";
+import { formatPrice, getCourses } from "@/lib/catalog-api";
 
-const languages = [
-  {
-    title: "Turkce Egitimler",
-    description: "Turkce icerikli dijital egitimlerin kart yapisi burada listelenecek."
-  },
-  {
-    title: "Ingilizce Egitimler",
-    description: "Ingilizce egitimlerin ayri katalog mantigiyla sunulacagi alan."
-  }
-];
+export default async function DigitalTrainingsPage() {
+  const courses = await getCourses();
 
-export default function DigitalTrainingsPage() {
   return (
     <main>
       <PageHero
-        title="Dijital Egitimler"
-        description="Dijital egitimler kendi icinde Turkce ve Ingilizce olarak iki ana basliga ayrilacak."
+        title="Dijital Eğitimler"
+        description="Dijital eğitimler backend kurs kayıtlarından alınır; dil, kategori ve fiyat bilgisi canlı veridir."
       />
       <section className="py-16">
-        <Container className="grid gap-6 md:grid-cols-2">
-          {languages.map((language) => (
-            <article key={language.title} className="rounded-lg border border-line bg-white p-6 shadow-card">
-              <h2 className="text-xl font-semibold text-ink">{language.title}</h2>
-              <p className="mt-4 text-sm leading-7 text-slate-600">{language.description}</p>
-              <div className="mt-6 rounded-lg bg-soft p-4 text-sm leading-7 text-slate-600">
-                Bu alanda egitim suresi, egitmen, altyazi dili ve satin alma modeli gosterilecek.
-              </div>
-            </article>
+        <Container className="grid gap-6 lg:grid-cols-3">
+          {courses.map((course) => (
+            <ProductCard
+              key={course.id}
+              title={course.title}
+              category={`${course.category} / ${course.language}`}
+              price={formatPrice(course.price)}
+              body={course.description}
+              slug={course.slug}
+              detailUrlPrefix="/magaza/dijital-egitimler"
+            />
           ))}
         </Container>
       </section>

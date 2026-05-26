@@ -1,25 +1,28 @@
 import { Container } from "@/components/container";
 import { EventCard } from "@/components/cards";
 import { PageHero } from "@/components/page-hero";
-import { upcomingEvents } from "@/lib/site-data";
+import { formatDate, formatPrice, getUpcomingEvents } from "@/lib/catalog-api";
 
-export default function UpcomingEventsPage() {
+export default async function UpcomingEventsPage() {
+  const upcomingEvents = await getUpcomingEvents();
+
   return (
     <main>
       <PageHero
-        title="Yaklasan Etkinlikler"
-        description="Her etkinlikte tarih, saat, egitmen, ucret, adet secimi ve sepete ekleme alanlari bulunacak."
+        title="Yaklaşan Etkinlikler"
+        description="Her etkinlikte tarih, lokasyon, ücret ve sepete ekleme akışı için güncel veriler kullanılır."
       />
       <section className="py-16">
         <Container className="grid gap-6 lg:grid-cols-3">
           {upcomingEvents.map((event) => (
             <EventCard
-              key={event.title}
+              key={event.id}
               title={event.title}
-              subtitle={event.date}
-              body={`${event.location} - ${event.instructor}. Saat, icerik, hedef kitle ve kazanımlar icin detay alani.`}
-              meta={`${event.price} - ${event.quota}`}
+              subtitle={formatDate(event.date)}
+              body={event.description}
+              meta={`${event.location} - ${formatPrice(event.price)}`}
               ctaLabel="Sepete Ekle"
+              slug={event.slug}
             />
           ))}
         </Container>

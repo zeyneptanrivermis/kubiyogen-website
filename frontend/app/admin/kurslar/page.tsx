@@ -1,32 +1,20 @@
-import Link from "next/link";
-import { AdminSection } from "@/components/admin/admin-section";
-import { adminCourses } from "@/components/admin/admin-data";
-import { Badge, Button, Table } from "@/components/ui";
+import { AdminResourceManager } from "@/components/admin-resource-manager";
 
 export default function AdminCoursesPage() {
   return (
-    <AdminSection
+    <AdminResourceManager
       title="Kurslar"
-      description="Dijital ve yuz yuze egitimlerin admin listesi."
-      action={
-        <Link href="/admin/kurslar/yeni">
-          <Button>Yeni Kurs</Button>
-        </Link>
-      }
-    >
-      <Table
-        data={adminCourses}
-        columns={[
-          { key: "title", header: "Baslik", cell: (row) => row.title },
-          { key: "language", header: "Dil", cell: (row) => row.language },
-          { key: "price", header: "Fiyat", cell: (row) => row.price },
-          {
-            key: "status",
-            header: "Durum",
-            cell: (row) => <Badge tone={row.status === "Yayinda" ? "success" : "warning"}>{row.status}</Badge>
-          }
-        ]}
-      />
-    </AdminSection>
+      description="Dijital ve yuz yuze egitimlerin dil, kategori, fiyat ve kodlu erisim ayarlari."
+      publicPath="/courses"
+      adminPath="/admin/courses"
+      fields={[
+        { name: "title", label: "Baslik" },
+        { name: "slug", label: "Slug" },
+        { name: "description", label: "Aciklama" },
+        { name: "price", label: "Fiyat", type: "number" },
+        { name: "category", label: "Kategori" },
+        { name: "language", label: "Dil" }
+      ]}
+    />
   );
 }

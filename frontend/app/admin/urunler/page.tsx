@@ -1,32 +1,19 @@
-import Link from "next/link";
-import { AdminSection } from "@/components/admin/admin-section";
-import { adminProducts } from "@/components/admin/admin-data";
-import { Badge, Button, Table } from "@/components/ui";
+import { AdminResourceManager } from "@/components/admin-resource-manager";
 
 export default function AdminProductsPage() {
   return (
-    <AdminSection
+    <AdminResourceManager
       title="Urunler"
-      description="Aksesuar stok, fiyat ve yayin durumu takibi."
-      action={
-        <Link href="/admin/urunler/yeni">
-          <Button>Yeni Urun</Button>
-        </Link>
-      }
-    >
-      <Table
-        data={adminProducts}
-        columns={[
-          { key: "title", header: "Baslik", cell: (row) => row.title },
-          { key: "stock", header: "Stok", cell: (row) => row.stock },
-          { key: "price", header: "Fiyat", cell: (row) => row.price },
-          {
-            key: "status",
-            header: "Durum",
-            cell: (row) => <Badge tone={row.status === "Yayinda" ? "success" : "warning"}>{row.status}</Badge>
-          }
-        ]}
-      />
-    </AdminSection>
+      description="Aksesuar fiyat, stok, gorsel ve yayinda/taslak durum yonetimi."
+      publicPath="/products"
+      adminPath="/admin/products"
+      fields={[
+        { name: "name", label: "Urun" },
+        { name: "slug", label: "Slug" },
+        { name: "description", label: "Aciklama" },
+        { name: "price", label: "Fiyat", type: "number" },
+        { name: "stock", label: "Stok", type: "number" }
+      ]}
+    />
   );
 }
