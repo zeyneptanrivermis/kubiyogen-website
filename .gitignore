@@ -1,5 +1,6 @@
 # Dependencies
 **/node_modules/
+venv/
 
 # Next.js
 frontend/.next/
@@ -32,3 +33,6 @@ yarn-error.log*
 
 # Vercel
 .vercel
+
+# Claude Code
+.claude/

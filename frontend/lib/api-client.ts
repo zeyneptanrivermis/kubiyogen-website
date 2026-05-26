@@ -19,19 +19,23 @@ export const clearToken = () => {
 };
 
 export async function apiRequest<T>(path: string, init: RequestInit = {}): Promise<ApiResult<T>> {
-  const token = getToken();
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init.headers
+  try {
+    const token = getToken();
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...init.headers
+      }
+    });
+    const text = await response.text();
+    const body = text ? JSON.parse(text) : null;
+    if (!response.ok) {
+      return { error: body?.message ?? "Islem tamamlanamadi" };
     }
-  });
-  const text = await response.text();
-  const body = text ? JSON.parse(text) : null;
-  if (!response.ok) {
-    return { error: body?.message ?? "Islem tamamlanamadi" };
+    return { data: body as T };
+  } catch {
+    return { error: "Backend API'ye ulasilamadi. Lutfen backend sunucusunun calistigindan emin olun." };
   }
-  return { data: body as T };
 }

@@ -40,6 +40,13 @@ export const errorHandler = (
     return res.status(error.status).json({ message: error.message });
   }
 
+  const message = error instanceof Error ? error.message : '';
+  if (message.includes("Can't reach database server")) {
+    return res.status(503).json({
+      message: 'Veritabani baglantisi kurulamadı. Lutfen PostgreSQL/Docker servisinin calistigindan emin olun.',
+    });
+  }
+
   console.error(error);
   return res.status(500).json({ message: 'Internal server error' });
 };

@@ -1,3 +1,9 @@
+export const brand = {
+  name: "Kubiyogen",
+  tagline: "Kariyer yolculuğunu şekillendir",
+  whatsapp: "905000000000"
+} as const;
+
 export const navigation = [
   { label: "Ana Sayfa", href: "/" },
   {
@@ -60,7 +66,8 @@ export const upcomingEvents = [
     location: "Istanbul",
     instructor: "Kubiyogen Ekibi",
     price: "1.200 TL",
-    quota: "18 kişilik kontenjan"
+    quota: "18 kişilik kontenjan",
+    image: undefined as string | undefined
   },
   {
     title: "Yapay Zeka ile Üretkenlik",
@@ -68,7 +75,8 @@ export const upcomingEvents = [
     location: "Online",
     instructor: "Konuk Egitmen",
     price: "950 TL",
-    quota: "25 kişilik kontenjan"
+    quota: "25 kişilik kontenjan",
+    image: undefined as string | undefined
   },
   {
     title: "CV ve Mülakat Kliniği",
@@ -76,7 +84,8 @@ export const upcomingEvents = [
     location: "Ankara",
     instructor: "Danışman Ekip",
     price: "800 TL",
-    quota: "14 kişilik kontenjan"
+    quota: "14 kişilik kontenjan",
+    image: undefined as string | undefined
   }
 ] as const;
 
@@ -84,17 +93,20 @@ export const pastEvents = [
   {
     title: "Portfolyo Geliştirme Buluşması",
     date: "15 Nisan 2026",
-    summary: "Katılımcılar portfolyo kurgusu, sunum dili ve geri bildirim alma pratikleri üzerine çalıştı."
+    summary: "Katılımcılar portfolyo kurgusu, sunum dili ve geri bildirim alma pratikleri üzerine çalıştı.",
+    image: undefined as string | undefined
   },
   {
     title: "LinkedIn Profili Güçlendirme Oturumu",
     date: "02 Nisan 2026",
-    summary: "LinkedIn profili düzenleme, içerik dili ve ağ kurma stratejileri ele alındı."
+    summary: "LinkedIn profili düzenleme, içerik dili ve ağ kurma stratejileri ele alındı.",
+    image: undefined as string | undefined
   },
   {
     title: "Uygulamalı Ekip Çalışması Günü",
     date: "20 Mart 2026",
-    summary: "Gerçek senaryolar üzerinden ekip içi iletişim ve görev dağılımı deneyimlendi."
+    summary: "Gerçek senaryolar üzerinden ekip içi iletişim ve görev dağılımı deneyimlendi.",
+    image: undefined as string | undefined
   }
 ] as const;
 
@@ -102,17 +114,47 @@ export const products = [
   {
     title: "Kubiyogen Not Defteri",
     price: "280 TL",
-    category: "Aksesuar"
+    category: "Aksesuar",
+    description: "Günlük notlar ve kariyer planlaması için özel tasarım defter.",
+    image: undefined as string | undefined
   },
   {
     title: "Mentorluk Calisma Karti",
     price: "190 TL",
-    category: "Aksesuar"
+    category: "Aksesuar",
+    description: "Mentorluk seanslarını yapılandırmak için pratik çalışma kartları.",
+    image: undefined as string | undefined
   },
   {
     title: "Planlama Seti",
     price: "340 TL",
-    category: "Aksesuar"
+    category: "Aksesuar",
+    description: "Haftalık ve aylık hedefleri takip etmek için kapsamlı planlama seti.",
+    image: undefined as string | undefined
+  }
+] as const;
+
+export const digitalTrainings = [
+  {
+    title: "Biyoteknolojiye Giriş",
+    price: "1.200 TL",
+    category: "Dijital Eğitim",
+    description: "Biyoteknoloji dünyasına kapsamlı bir giriş kursu.",
+    image: undefined as string | undefined
+  },
+  {
+    title: "CRISPR ve Gen Düzenleme",
+    price: "1.800 TL",
+    category: "Dijital Eğitim",
+    description: "CRISPR teknolojisi ve gen düzenleme uygulamaları.",
+    image: undefined as string | undefined
+  },
+  {
+    title: "Laboratuvar Teknikleri",
+    price: "950 TL",
+    category: "Dijital Eğitim",
+    description: "Temel laboratuvar tekniklerini online öğrenin.",
+    image: undefined as string | undefined
   }
 ] as const;
 
